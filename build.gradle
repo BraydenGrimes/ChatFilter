@@ -1,0 +1,30 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+}
+
+java {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+}
+
+group 'com.github.braydengrimes'
+version '1.0.0-alpha'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    // Spigot and Minecraft plugin dependencies
+    implementation 'org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT'
+}
+
+// Allows @version@ placeholder in plugin.yml
+processResources {
+    filter ReplaceTokens, tokens: ['version': version]
+}
