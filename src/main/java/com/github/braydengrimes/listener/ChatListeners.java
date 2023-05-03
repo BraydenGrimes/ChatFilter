@@ -5,16 +5,41 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
+import java.util.UUID;
 
 public class ChatListeners implements Listener {
-    private boolean isCapsLock(String message) {
-        int capitalLetters = 0;
-        int totalLetters = 0;
 
-        for (char c : message.toCharArray()) {
-            if (Character.isLetter(c)) {
+    private final Map<UUID, Long> lastMessageTimestamps = new HashMap<>();
+
+    private boolean hasCooldown(UUID playerId) {
+        final long CHAT_COOLDOWN_TIME = 3000; // Adjust the Cooldown time as needed (in milliseconds)
+
+        Long lastTimestamp = lastMessageTimestamps.get(playerId);
+        if (lastTimestamp == null) {
+            lastMessageTimestamps.put(playerId, System.currentTimeMillis());
+            return false;
+        }
+
+        long timeSinceLastMessage = System.currentTimeMillis() - lastTimestamp;
+
+        if (timeSinceLastMessage < CHAT_COOLDOWN_TIME) {
+            return true;
+        } else {
+            lastMessageTimestamps.put(playerId, System.currentTimeMillis());
+            return false;
+        }
+    }
+
+
+        private boolean isCapsLock(String message) {
+            int capitalLetters = 0;
+            int totalLetters = 0;
+
+            for (char c : message.toCharArray()) {
+                if (Character.isLetter(c)) {
                 totalLetters++;
                 if (Character.isUpperCase(c)) {
                     capitalLetters++;
@@ -33,6 +58,15 @@ public class ChatListeners implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         String message = event.getMessage();
+        UUID playerId = event.getPlayer().getUniqueId();
+
+        if (hasCooldown(playerId)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage("§cPlease wait before sending another message.");
+            return;
+        }
+
+
 
 
             if (containsBannedWord(message)) {
