@@ -9,8 +9,44 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ChatListeners implements Listener {
+    private boolean isCapsLock(String message) {
+        int capitalLetters = 0;
+        int totalLetters = 0;
 
-    private final ChatFilter plugin;
+        for (char c : message.toCharArray()) {
+            if (Character.isLetter(c)) {
+                totalLetters++;
+                if (Character.isUpperCase(c)) {
+                    capitalLetters++;
+                }
+            }
+        }
+
+        if (totalLetters == 0) {
+            return false;
+        }
+
+        double capitalLetterPercentage = ((double) capitalLetters) / totalLetters;
+        return capitalLetterPercentage > 0.8; // Adjust the threshold as needed
+    }
+
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        String message = event.getMessage();
+
+
+            if (containsBannedWord(message)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage("Your message contains a banned word. Please refrain from using profanity.");
+        }
+
+            if (isCapsLock(message)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage("Please do not use excessive capital letters");
+            }
+    }
+
+        private final ChatFilter plugin;
 
     public ChatListeners(ChatFilter plugin) {
         this.plugin = plugin;
@@ -30,14 +66,4 @@ public class ChatListeners implements Listener {
         }
         return false;
     }
-
-    @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
-        String message = event.getMessage();
-        if (containsBannedWord(message)) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage("Your message contains a banned word. Please refrain from using profanity.");
-        }
-    }
-
 }
