@@ -66,17 +66,14 @@ public class ChatListeners implements Listener {
             return;
         }
 
-
-
-
             if (containsBannedWord(message)) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage("Your message contains a banned word. Please refrain from using profanity.");
+            event.getPlayer().sendMessage("§cYour message contains a banned word. Please refrain from using profanity.");
         }
 
             if (isCapsLock(message)) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage("Please do not use excessive capital letters");
+            event.getPlayer().sendMessage("§cPlease do not use excessive capital letters");
             }
     }
 
